@@ -2,7 +2,7 @@
 #include <systemc>
 using namespace sc_core;
 
-int sc_main( [[maybe_unused]]int argc, [[maybe_unused]]const char* argv )
+int sc_main( [[maybe_unused]]int argc, [[maybe_unused]]char* argv[] )
 {
   static constexpr const char* msgType{"/Doulos/event_channel/main"};
   Top_module top{"top"};
