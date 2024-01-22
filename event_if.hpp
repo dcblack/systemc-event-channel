@@ -8,7 +8,7 @@ struct Event_notify_if
 };
 
 struct Event_view_if
-  : sc_core::sc_interface
+  : virtual sc_core::sc_interface
 {
   virtual const sc_core::sc_event& event() const = 0;
 };
