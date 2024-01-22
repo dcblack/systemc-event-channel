@@ -7,8 +7,8 @@ using namespace std::literals;
 using namespace sc_core::literals;
 using namespace sc_core; // convenience in cpp
 
-#define FSTR std::string{__func__}
-#define TSTR sc_core::sc_time_stamp().to_string()
+#define FSTR ( std::string{name()} + ":"s + std::string{__func__} )
+#define TSTR ( sc_core::sc_time_stamp().to_string() )
 
 SC_MODULE( Producer_module ) {
   static constexpr const char* msgType{"Producer_module"};
@@ -17,6 +17,7 @@ SC_MODULE( Producer_module ) {
     for(auto n=5; n--; ) {
       wait(2_ns);
       event_port->notify(SC_ZERO_TIME);
+      event_port->notify(1_ns);
       SC_REPORT_INFO_VERB( msgType
                          , (FSTR +" sent event at "s + TSTR).c_str()
                          , SC_NONE
