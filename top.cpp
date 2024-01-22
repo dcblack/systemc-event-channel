@@ -7,6 +7,7 @@ using namespace std::literals;
 using namespace sc_core::literals;
 using namespace sc_core; // convenience in cpp
 
+#define HORIZONTAL_LINE SC_REPORT_INFO( msgType, ( std::string(80,'-')).c_str() );
 #define FSTR ( std::string{name()} + ":"s + std::string{__func__} )
 #define TSTR ( sc_core::sc_time_stamp().to_string() )
 
@@ -14,20 +15,21 @@ SC_MODULE( Producer_module ) {
   static constexpr const char* msgType{"Producer_module"};
   sc_port<Event_notify_if> event_port{"event_port"};
   void producer_thread() {
-    for(auto n=5; n--; ) {
-      wait(2_ns);
+    for(auto repetitions=3; repetitions--; ) {
+      HORIZONTAL_LINE
       event_port->notify(SC_ZERO_TIME);
+      SC_REPORT_INFO( msgType, (FSTR +" sent event at "s + TSTR).c_str() );
+      wait( 1_ns );
       event_port->notify(1_ns);
-      SC_REPORT_INFO_VERB( msgType
-                         , (FSTR +" sent event at "s + TSTR).c_str()
-                         , SC_NONE
-                         );
+      SC_REPORT_INFO( msgType, (FSTR +" sent delayed event at "s + TSTR).c_str() );
     }
-    wait(100_ns);
-    SC_REPORT_INFO_VERB( msgType
-                       , (FSTR +" stopping at "s + TSTR).c_str()
-                       , SC_NONE
-                       );
+    wait( SC_ZERO_TIME );
+    HORIZONTAL_LINE
+    event_port->notify();
+    SC_REPORT_INFO( msgType, (FSTR +" sent immediate event at "s + TSTR).c_str() );
+    wait( 100_ns );
+    HORIZONTAL_LINE
+    SC_REPORT_INFO( msgType, (FSTR +" stopping at "s + TSTR).c_str() );
     sc_stop();
   }
   explicit SC_CTOR( Producer_module ) {
@@ -42,22 +44,17 @@ SC_MODULE( Consumer_module ) {
   [[noreturn]] void consumer_thread() {
     for(;;) {
       wait(incoming_port->event());//< Dynamic
-      SC_REPORT_INFO_VERB( msgType
-                         , (FSTR +" received event at "s + TSTR).c_str()
-                         , SC_NONE
-                         );
+      SC_REPORT_INFO( msgType, (FSTR +" received event at "s + TSTR).c_str() );
     }
   }
   void consumer_method() {
-    SC_REPORT_INFO_VERB( msgType
-                       , (FSTR +" received event at "s + TSTR).c_str()
-                       , SC_NONE
-                       );
+    SC_REPORT_INFO( msgType, (FSTR +" received event at "s + TSTR).c_str() );
   }
   explicit SC_CTOR( Consumer_module ) {
     SC_THREAD(consumer_thread);
     SC_METHOD(consumer_method);
     sensitive << incoming_port;
+    dont_initialize();
   }
 };
 
