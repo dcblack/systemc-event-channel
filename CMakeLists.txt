@@ -12,7 +12,7 @@
 cmake_minimum_required( VERSION 3.20 )
 
 project(      event_channel
-  VERSION     0.1 # n.n[.n[.n]]
+  VERSION     1.0 # n.n[.n[.n]]
   DESCRIPTION "A simple channel for events"
   LANGUAGES   CXX
   )
